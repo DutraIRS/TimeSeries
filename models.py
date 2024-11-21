@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+import numpy as np
 
 class Model(ABC):
     @abstractmethod
@@ -16,14 +16,20 @@ class Model(ABC):
         """
         pass
     
-    def _evaluate(self, metric):
-        ...
+    def _evaluate(self, metric, y_true, y_pred):
+        if metric == "mse":
+            return np.mean((y_true - y_pred) ** 2)
+        elif metric == "mae":
+            return np.mean(np.abs(y_true - y_pred))
+        else:
+            raise ValueError(f"Unknown metric: {metric}")
     
-    def evaluate(self, metrics):
+    def evaluate(self, metrics, X, y):
+        y_pred = self.predict(X)
         report = {}
         
         for metric in metrics:
-            self._evaluate(metric)
+            report[metric] = self._evaluate(metric, y, y_pred)
         
         return report
 
@@ -33,20 +39,24 @@ class Mean(Model):
     def fit(self, X, y):
         self.mean = y.mean()
 
-    def predict(self, X):
-        return self.mean
+    def predict(self, x):
+        return np.full(len(x), self.mean)
+    
+    def num_params(self):
+        return 1
 
 
 class RandomWalk(Model):
     def fit(self, X, y):
-        self.last_value = y[-1]
-    def predict(self, X):
-        return self.last_value
+        self.last_value = y.iloc[-1]
+    def predict(self, x):
+        return np.full(len(x), self.last_value)
+    def num_params(self):
+        return 1
 
 
 class SeasonalRandomWalk(Model):
     ...
-
 
 class Drift(Model):
     ...
@@ -70,3 +80,6 @@ class Conv1D(Model):
 
 class LSTM(Model):
     ...
+
+
+
