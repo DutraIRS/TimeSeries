@@ -67,7 +67,16 @@ class ExponentialSmoothing(Model):
 
 
 class LinearRegression(Model):
-    ...
+    def fit(self, X, y):
+        X = np.c_[np.ones(X.shape[0]), X.values]
+        self.coefficients = np.linalg.pinv(X.T @ X) @ X.T @ y.values
+
+    def predict(self, x):
+        x = np.c_[np.ones(x.shape[0]), x.values]  
+        return x @ self.coefficients
+    
+    def num_params(self):
+        return len(self.coefficients)
 
 
 class SARIMA(Model):
