@@ -38,7 +38,10 @@ class Mean(Model):
 
 
 class RandomWalk(Model):
-    ...
+    def fit(self, X, y):
+        self.last_value = y[-1]
+    def predict(self, X):
+        return self.last_value
 
 
 class SeasonalRandomWalk(Model):
