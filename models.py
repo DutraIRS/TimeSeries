@@ -56,7 +56,24 @@ class RandomWalk(Model):
 
 
 class SeasonalRandomWalk(Model):
-    ...
+    def fit(self, X, y,seasonality):
+        self.seasonality = seasonality
+        self.last_season = y.iloc[-seasonality:]
+        self.season_orientation = X.iloc[-seasonality:]['Quarter'] % seasonality
+    def predict(self, x):
+        quarters = x['Quarter']
+        quarters = quarters % self.seasonality
+        # Print the position index for the values of quarters in the season_orientation
+        predictions_index = np.array([np.where(self.season_orientation == quarter)[0][0] for quarter in quarters])
+        predictions = []
+        for i in range(len(predictions_index)):
+            location = predictions_index[i]
+            predictions.append(self.last_season.iloc[location])
+        return predictions
+    def num_params(self):
+        return self.seasonality
+
+
 
 class Drift(Model):
     ...
