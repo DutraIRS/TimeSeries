@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def rmse(y_true, y_pred):
     return np.sqrt(np.mean((y_true - y_pred) ** 2))
 
@@ -13,16 +12,18 @@ def r_squared(y_true, y_pred):
     
     return 1 - ss_res / ss_tot
 
-# gepetado, conferir se ta certo
 def aic(y_true, y_pred, num_params):
-    n = len(y_true)
     rss = np.sum((y_true - y_pred) ** 2)
-    
-    return n * np.log(rss / n) + 2 * num_params
+    return -2*np.log(rss) + 2*num_params
 
-# gepetado, conferir se ta certo
-def bic(y_true, y_pred, num_params):
+def aic_corrected(y_true, y_pred, num_params):
+    aic = aic(y_true, y_pred, num_params)
     n = len(y_true)
-    rss = np.sum((y_true - y_pred) ** 2)
     
-    return n * np.log(rss / n) + num_params * np.log(n)
+    return aic + 2*num_params*(num_params + 1)/(n - num_params - 1)
+
+def bic(y_true, y_pred, num_params):
+    aic = aic(y_true, y_pred, num_params)
+    n = len(y_true)
+    
+    return aic + num_params*(np.log(n) - 2)
