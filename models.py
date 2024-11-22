@@ -86,6 +86,9 @@ class SeasonalRandomWalk(Model):
 
 
 class Drift(Model):
+    """
+    Model that predicts the trend of the target variable.
+    """
     def fit(self, X, y):
         self.C = (y.iloc[-1] - y.iloc[0]) / (len(y)-1)
         self.last_value = y.iloc[-1]
@@ -98,10 +101,39 @@ class Drift(Model):
 
 
 class ExponentialSmoothing(Model):
-    ...
+    def fit(self,X,y,alpha):
+        if not (0 < alpha <= 1):
+            raise ValueError("Alpha must be between 0 and 1.")
+        self.alpha = alpha
+        self.initial_value = y[0]  
+        self.smoothed_values = np.zeros(len(y))
+        self.smoothed_values[0] = self.initial_value
+        for t in range(1, len(y)):
+            self.smoothed_values[t] = self.alpha * y[t] + (1 - self.alpha) * self.smoothed_values[t - 1]
 
+    def predict(self,x,steps):
+        if self.smoothed_values is None:
+            raise ValueError("Model must be fitted before predicting.")
+        last_smoothed = self.smoothed_values[-1]
+        return [last_smoothed] * steps
+    
+    def evaluate(self, metrics, X, y, steps):
+        y_pred = self.predict(X, steps)
+        y_true = y[-steps:]
+        report = {}
+        
+        for metric in metrics:
+            report[metric] = self._evaluate(metric, y_true, y_pred)
+        
+        return report
+    
+    def num_params(self):
+        return 1
 
 class LinearRegression(Model):
+    """
+    Model that predicts the target variable using a linear combination of the features.
+    """
     def fit(self, X, y):
         X = X.drop(columns=["Date"])
         X = np.c_[np.ones(X.shape[0]), X.values]
