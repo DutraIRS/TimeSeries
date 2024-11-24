@@ -16,8 +16,9 @@ def r_squared(y_true, y_pred, *args):
     return 1 - ss_res / ss_tot
 
 def aic(y_true, y_pred, num_params):
+    eps = 1e-10 # Added for numerical stability
     rss = np.sum((y_true - y_pred) ** 2)
-    return -2 * np.log(rss) + 2 * num_params
+    return -2 * np.log(rss + eps) + 2 * num_params
 
 def aic_corrected(y_true, y_pred, num_params):
     aic_ = aic(y_true, y_pred, num_params)
