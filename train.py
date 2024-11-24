@@ -62,7 +62,7 @@ def main():
         for i, metric in enumerate(metrics_list):
             model_results[metric.__name__] = cv_results[i]
         
-        results[model.__class__.__name__] = model_results
+        results[str(model)] = model_results
         
     print(pd.DataFrame(results).T)
 

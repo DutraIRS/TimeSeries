@@ -11,10 +11,16 @@ class Model(ABC):
     """
     @abstractmethod
     def fit(self, X, y):
+        """
+        Fits the model to the given input data and target variable.
+        """
         pass
 
     @abstractmethod
     def predict(self, X):
+        """
+        Returns the predictions of the model for the given input data.
+        """
         pass
     
     @abstractmethod
@@ -23,6 +29,12 @@ class Model(ABC):
         Returns the number of parameters of the model.
         """
         pass
+    
+    def __str__(self):
+        """
+        Returns the name of the model as a string.
+        """
+        return self.__class__.__name__
 
 
 # Baseline models
@@ -60,6 +72,9 @@ class SeasonalRandomWalk(Model):
     """
     def __init__(self, seasonality):
         self.seasonality = seasonality
+    
+    def __str__(self):
+        return super().__str__() + f"({self.seasonality})"
     
     def fit(self, X, y):
         self.last_observation = X.iloc[-1]
@@ -106,6 +121,9 @@ class ExponentialSmoothing(Model):
         
         self.alpha = alpha
     
+    def __str__(self):
+        return super().__str__() + f"({self.alpha})"
+    
     def fit(self, X, y):
         # Initialize the smoothed value with the first observation
         self.smoothed_values = np.zeros(len(y))
@@ -151,6 +169,9 @@ class SARIMA(Model):
         self.seasonal_order = seasonal_order
         self.model = None
         self.fitted_model = None
+    
+    def __str__(self):
+        return super().__str__() + f"({self.order}, {self.seasonal_order})"
 
     def fit(self, X, y):
         # SARIMA = SARIMAX without exogenous variables
@@ -187,6 +208,9 @@ class Conv1DModel(Model):
         self.model.add(Dense(1))
         self.model.compile(optimizer='adam', loss='mean_squared_error')
     
+    def __str__(self):
+        return super().__str__() + f"({self.filters}, {self.kernel_size}, {self.input_size})"
+    
     def fit(self, X, y, epochs=50, batch_size=8):
         self.model.fit(X, y, epochs=epochs, batch_size=batch_size, verbose=0)
     
@@ -207,6 +231,9 @@ class LSTMModel(Model):
         self.model.add(LSTM(units=self.units, activation='relu'))
         self.model.add(Dense(1))
         self.model.compile(optimizer='adam', loss='mean_squared_error')
+    
+    def __str__(self):
+        return super().__str__() + f"({self.units}, {self.input_size})"
     
     def fit(self, X, y, epochs=50, batch_size=8):
         self.model.fit(X, y, epochs=epochs, batch_size=batch_size, verbose=0)
