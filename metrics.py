@@ -17,16 +17,16 @@ def r_squared(y_true, y_pred, *args):
 
 def aic(y_true, y_pred, num_params):
     rss = np.sum((y_true - y_pred) ** 2)
-    return -2*np.log(rss) + 2*num_params
+    return -2 * np.log(rss) + 2 * num_params
 
 def aic_corrected(y_true, y_pred, num_params):
     aic_ = aic(y_true, y_pred, num_params)
     n = len(y_true)
     
-    return aic_ + 2*num_params*(num_params + 1)/(n - num_params - 1)
+    return aic_ + 2 * num_params * (num_params + 1) / (n - num_params - 1)
 
 def bic(y_true, y_pred, num_params):
     aic_ = aic(y_true, y_pred, num_params)
     n = len(y_true)
     
-    return aic_ + num_params*(np.log(n) - 2)
+    return aic_ + num_params * (np.log(n) - 2)
