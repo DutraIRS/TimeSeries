@@ -2,7 +2,8 @@ import numpy as np
 from abc import ABC, abstractmethod
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from keras.models import Sequential
-from keras.layers import Conv1D, Flatten, Dense, LSTM, Input
+from keras.layers import Conv1D, Flatten, Dense, LSTM, Input, BatchNormalization
+import tensorflow as tf
 
 
 class Model(ABC):
@@ -204,6 +205,10 @@ class Conv1DModel(Model):
         self.model.add(Input(shape=(self.input_size, 1)))
         self.model.add(Conv1D(filters=self.filters, kernel_size=self.kernel_size,
                             activation='relu'))
+        self.model.add(BatchNormalization())
+        self.model.add(Conv1D(filters=self.filters * 2, kernel_size=self.kernel_size,
+                            activation='relu', padding='same'))
+        self.model.add(BatchNormalization())
         self.model.add(Flatten())
         self.model.add(Dense(1))
         self.model.compile(optimizer='adam', loss='mean_squared_error')
@@ -212,9 +217,12 @@ class Conv1DModel(Model):
         return super().__str__() + f"({self.filters}, {self.kernel_size}, {self.input_size})"
     
     def fit(self, X, y, epochs=50, batch_size=8):
+        X = tf.expand_dims(tf.convert_to_tensor(X), 2)
+        y = tf.expand_dims(tf.convert_to_tensor(y), 1)
         self.model.fit(X, y, epochs=epochs, batch_size=batch_size, verbose=0)
     
     def predict(self, X):
+        X = tf.expand_dims(tf.convert_to_tensor(X), 2)
         return self.model.predict(X).flatten()
     
     def num_params(self):
@@ -236,9 +244,12 @@ class LSTMModel(Model):
         return super().__str__() + f"({self.units}, {self.input_size})"
     
     def fit(self, X, y, epochs=50, batch_size=8):
+        X = tf.expand_dims(tf.convert_to_tensor(X), 2)
+        y = tf.expand_dims(tf.convert_to_tensor(y), 1)
         self.model.fit(X, y, epochs=epochs, batch_size=batch_size, verbose=0)
     
     def predict(self, X):
+        X = tf.expand_dims(tf.convert_to_tensor(X), 2)
         return self.model.predict(X).flatten()
     
     def num_params(self):

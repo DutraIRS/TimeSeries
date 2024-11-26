@@ -35,6 +35,7 @@ def main():
     X = data.drop(columns='Consumption')
     y = data['Consumption']
     
+    X = (X - X.mean()) / X.std()
     # Define models
     models_list = [
         models.Mean(),
