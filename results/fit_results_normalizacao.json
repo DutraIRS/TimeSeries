@@ -1,0 +1,54 @@
+{
+    "r_squared": {
+        "Mean": 0.0,
+        "RandomWalk": -0.34007363992166795,
+        "SeasonalRandomWalk(2)": -0.5258011415263701,
+        "SeasonalRandomWalk(3)": -0.49665497703120387,
+        "SeasonalRandomWalk(4)": -0.28194728402253233,
+        "Drift": -0.15487332258886344,
+        "ExponentialSmoothing(1)": -0.34007363992166795,
+        "LinearRegression": 0.7755762061792892,
+        "SARIMA((1, 0, 1), (1, 0, 1, 4))": -0.9863938125342113,
+        "Conv1DModel(1, 4, 5)": -0.09601484099117297,
+        "LSTMModel(5, 1)": 0.25228194562536277
+    },
+    "aic": {
+        "Mean": -6.76788064594443,
+        "RandomWalk": -7.353329781180324,
+        "SeasonalRandomWalk(2)": -5.612919867589815,
+        "SeasonalRandomWalk(3)": -3.5743458511609916,
+        "SeasonalRandomWalk(4)": -1.2646411210354707,
+        "Drift": -5.055861967037117,
+        "ExponentialSmoothing(1)": -7.353329781180324,
+        "LinearRegression": 6.220557509818113,
+        "SARIMA((1, 0, 1), (1, 0, 1, 4))": -0.1405223265285045,
+        "Conv1DModel(1, 4, 5)": 55.04875789508682,
+        "LSTMModel(5, 1)": 283.81357796349243
+    },
+    "aic_corrected": {
+        "Mean": -6.747472482679124,
+        "RandomWalk": -7.3329216179150185,
+        "SeasonalRandomWalk(2)": -5.5513814060513536,
+        "SeasonalRandomWalk(3)": -3.450634510954806,
+        "SeasonalRandomWalk(4)": -1.057387235025108,
+        "Drift": -4.994323505498656,
+        "ExponentialSmoothing(1)": -7.3329216179150185,
+        "LinearRegression": 6.660348085734344,
+        "SARIMA((1, 0, 1), (1, 0, 1, 4))": 0.1719776734714955,
+        "Conv1DModel(1, 4, 5)": 67.84875789508682,
+        "LSTMModel(5, 1)": 1125.460636787022
+    },
+    "bic": {
+        "Mean": -3.479613615249895,
+        "RandomWalk": -4.065062750485789,
+        "SeasonalRandomWalk(2)": 0.9636141937992555,
+        "SeasonalRandomWalk(3)": 6.290455240922615,
+        "SeasonalRandomWalk(4)": 11.88842700174267,
+        "Drift": 1.5206720943519532,
+        "ExponentialSmoothing(1)": -4.065062750485789,
+        "LinearRegression": 25.950159693985327,
+        "SARIMA((1, 0, 1), (1, 0, 1, 4))": 16.30081282694417,
+        "Conv1DModel(1, 4, 5)": 160.27330287731195,
+        "LSTMModel(5, 1)": 763.9005644448946
+    }
+}

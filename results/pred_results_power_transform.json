@@ -1,0 +1,41 @@
+{
+    "rmse": {
+        "Mean": 0.5861556706427054,
+        "RandomWalk": 0.582690476491116,
+        "SeasonalRandomWalk(2)": 0.6054305606624759,
+        "SeasonalRandomWalk(3)": 0.6110262092909666,
+        "SeasonalRandomWalk(4)": 0.6013269394192053,
+        "Drift": 0.6009334021593357,
+        "ExponentialSmoothing(1)": 0.582690476491116,
+        "LinearRegression": 0.5209121949481111,
+        "SARIMA((1, 0, 1), (1, 0, 1, 4))": 0.5701367261888945,
+        "Conv1DModel(1, 4, 5)": 0.41428656592637436,
+        "LSTMModel(5, 1)": 0.5092970161653317
+    },
+    "mae": {
+        "Mean": 0.4462864136147962,
+        "RandomWalk": 0.4500242552082302,
+        "SeasonalRandomWalk(2)": 0.45488669556532846,
+        "SeasonalRandomWalk(3)": 0.48599704125603294,
+        "SeasonalRandomWalk(4)": 0.47249096145727015,
+        "Drift": 0.47138756206159654,
+        "ExponentialSmoothing(1)": 0.4500242552082302,
+        "LinearRegression": 0.30753346405809834,
+        "SARIMA((1, 0, 1), (1, 0, 1, 4))": 0.4338707247677272,
+        "Conv1DModel(1, 4, 5)": 0.31379869678083716,
+        "LSTMModel(5, 1)": 0.3886269607965104
+    },
+    "mape": {
+        "Mean": 1.9985562893673898,
+        "RandomWalk": 1.4340688311105656,
+        "SeasonalRandomWalk(2)": 2.384473383986747,
+        "SeasonalRandomWalk(3)": 1.860497804539549,
+        "SeasonalRandomWalk(4)": 1.4450485089077902,
+        "Drift": 1.4616762960533238,
+        "ExponentialSmoothing(1)": 1.4340688311105656,
+        "LinearRegression": 0.9049695325398212,
+        "SARIMA((1, 0, 1), (1, 0, 1, 4))": 1.6652227025546122,
+        "Conv1DModel(1, 4, 5)": 0.718587143648042,
+        "LSTMModel(5, 1)": 1.3284416289553704
+    }
+}
