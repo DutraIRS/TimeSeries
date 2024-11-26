@@ -5,6 +5,8 @@ import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 from sklearn.model_selection import TimeSeriesSplit
+import json
+from sklearn.preprocessing import PowerTransformer
 
 def plot_prediction(models_list, X, y):
     """
@@ -29,13 +31,17 @@ def plot_prediction(models_list, X, y):
     plt.show()
 
 
-def main():
+def train_tranformation(transform, inv_transform, archive_name):
+    print("Init ", archive_name)
     # Load data
     data = pd.read_csv("us_change_cleaned.csv").drop(columns='Date')
     X = data.drop(columns='Consumption')
     y = data['Consumption']
-    
-    X = (X - X.mean()) / X.std()
+
+    y_original = y.copy()
+
+    X, y = transform(X, y)
+
     # Define models
     models_list = [
         models.Mean(),
@@ -72,15 +78,21 @@ def main():
     
     fit_results = {}
     pred_results = {}
+    residuals_results = {}
+
     for model in models_list:
         model_results = {}
         
         # Goodness of fit evaluation
         model.fit(X, y)
         y_pred = model.predict(X)
-        
+        # Convert to numpy array in models that return core.Series
+        y_pred = pd.Series(y_pred).to_numpy()
+
+        # Invert predictions to measure metrics
+        y_pred_inv = inv_transform(y_pred.reshape(-1,1)).reshape(-1)
         for metric in fit_metrics_list:
-            model_results[metric.__name__] = metric(y, y_pred, model.num_params())
+            model_results[metric.__name__] = metric(y_original, y_pred_inv, model.num_params())
         
         fit_results[str(model)] = model_results
         
@@ -90,13 +102,19 @@ def main():
         folds_results = np.zeros((num_splits, len(pred_metrics_list)))
         for i, (train_index, test_index) in enumerate(ts_cv.split(X)):
             # Fit and predict fold data
-            model.fit(X.iloc[train_index], y.iloc[train_index])
-            y_pred = model.predict(X.iloc[test_index])
-            
+            model.fit(X.iloc[train_index], y[train_index])
+            y_pred_cross = model.predict(X.iloc[test_index])
+
+            # Convert to numpy array models that return core.Series
+            y_pred_cross = pd.Series(y_pred_cross).to_numpy()
+
+            # Invert predictions to measure metrics
+            y_pred_cross_inv = inv_transform(y_pred_cross.reshape(-1,1)).reshape(-1)
+
             # Evaluate predictions
             for j, metric in enumerate(pred_metrics_list):
-                folds_results[i, j] = metric(y.iloc[test_index], y_pred, model.num_params())
-            
+                folds_results[i, j] = metric(y_original[test_index], y_pred_cross_inv, model.num_params())
+
         # Average results over folds
         cv_results = folds_results.mean(axis=0)
         
@@ -104,9 +122,56 @@ def main():
             model_results[metric.__name__] = cv_results[i]
         
         pred_results[str(model)] = model_results
-        
-    print(pd.DataFrame(fit_results).T)
-    print(pd.DataFrame(pred_results).T)
+        residuals_results[str(model)] = list(y_pred_inv - y_original)
+    
+    with open("results/fit_results_" + archive_name + ".json", "w") as f:
+        json.dump(pd.DataFrame(fit_results).T.to_dict(), f, indent=4)
+    
+    with open("results/pred_results_" + archive_name + ".json", "w") as f:
+        json.dump(pd.DataFrame(pred_results).T.to_dict(), f, indent=4)
+
+    with open("results/residual_" + archive_name + ".json", "w") as f:
+        json.dump(residuals_results, f, indent=4)
+
+    print(archive_name + " Done!")
+
+def main():
+    def null_transform(X, y):
+        return X, y
+    
+    def null_inv_tranform(y):
+        return y
+    
+    def normalization(X, y):
+        quarter = X["Quarter"]
+        X = X.drop(columns="Quarter")
+
+        X = (X - X.mean()) / X.std()
+
+        X["Quarter"] = quarter
+        return X, y
+    
+
+    power_transform = PowerTransformer(method='yeo-johnson')
+    def norm_power_transform(X, y):
+        # Normalization
+        quarter = X["Quarter"]
+        X = X.drop(columns="Quarter")
+
+        X = (X - X.mean()) / X.std()
+
+        X["Quarter"] = quarter
+
+        y = power_transform.fit_transform(y.values.reshape(-1,1))
+        y = pd.Series(y.reshape(-1))
+        return X, y
+    
+    def inv_power_transform(y):
+        return power_transform.inverse_transform(y.reshape(-1,1)).reshape(-1)
+    
+    train_tranformation(null_transform, null_inv_tranform, "sem_transformacao")
+    train_tranformation(normalization, null_inv_tranform, "normalizacao")
+    train_tranformation(norm_power_transform, inv_power_transform, "power_transform")
 
 
 if __name__ == "__main__":
