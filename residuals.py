@@ -34,8 +34,8 @@ def plot_residual_distribution(data, archive_name):
         
         axes[row, col].hist(data[column], color='purple')
         axes[row, col].set_title(f"{column}")
-        axes[row, col].set_xlabel("Tempo")
-        axes[row, col].set_ylabel("Resíduo")
+        axes[row, col].set_xlabel("Resíduo")
+        axes[row, col].set_ylabel("Frequência")
 
     plt.savefig("results/img/residuos_distribuicao_" + archive_name + ".png", dpi=300, bbox_inches='tight')
 
